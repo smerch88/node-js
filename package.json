@@ -1,0 +1,22 @@
+{
+  "name": "js",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/smerch88/node-js.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/smerch88/node-js/issues"
+  },
+  "homepage": "https://github.com/smerch88/node-js#readme",
+  "devDependencies": {
+    "prettier": "^3.2.5"
+  }
+}
