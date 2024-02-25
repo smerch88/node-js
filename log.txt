@@ -1,0 +1,3 @@
+Date: 1708897002735, category: app.js, level: INFO, message: {"red":"red","blue":"blue"}
+Date: 1708897002736, category: app.js, level: ERROR, message: {"red":"red","blue":"blue"}
+Date: 1708897002737, category: app.js, level: WARN, message: {"red":"red","blue":"blue"}
