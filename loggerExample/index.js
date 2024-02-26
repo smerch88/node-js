@@ -8,3 +8,5 @@ const log = logger.getLogger("app.js");
 log.info(color)
 log.error(color)
 log.warn(color)
+log.trace(color)
+log.trace(color)
