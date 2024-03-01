@@ -3,8 +3,10 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "logger": "node loggerExample/index.js"
   },
   "repository": {
     "type": "git",
@@ -18,5 +20,9 @@
   "homepage": "https://github.com/smerch88/node-js#readme",
   "devDependencies": {
     "prettier": "^3.2.5"
+  },
+  "dependencies": {
+    "config": "^3.3.11",
+    "dotenv": "^16.4.5"
   }
 }
