@@ -1,4 +1,5 @@
 {
   "logLevel": "WARN",
-  "appender": "console"
+  "appender": "console",
+  "outputFormat": "json"
 }
