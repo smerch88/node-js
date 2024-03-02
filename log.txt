@@ -1,0 +1,17 @@
+Date: 1708897002735, category: app.js, level: INFO, message: {"red":"red","blue":"blue"}
+Date: 1708897002736, category: app.js, level: ERROR, message: {"red":"red","blue":"blue"}
+Date: 1708897002737, category: app.js, level: WARN, message: {"red":"red","blue":"blue"}
+Date: 1708971145328, category: app.js, level: ERROR, message: {"red":"red","blue":"blue"}
+Date: 1708971151724, category: app.js, level: ERROR, message: {"red":"red","blue":"blue"}
+Date: 1708971180396, category: app.js, level: ERROR, message: {"red":"red","blue":"blue"}
+Date: 1708971210070, category: app.js, level: ERROR, message: {"red":"red","blue":"blue"}
+Date: 1708971213933, category: app.js, level: ERROR, message: {"red":"red","blue":"blue"}
+Date: 1708973027861, category: app.js, level: ERROR, message: {"red":"red","blue":"blue"}
+Date: 1708973256161, category: app.js, level: ERROR, message: {"red":"red","blue":"blue"}
+Date: 1708973383918, category: app.js, level: ERROR, message: {"red":"red","blue":"blue"}
+Date: 1708973427210, category: app.js, level: ERROR, message: {"red":"red","blue":"blue"}
+Date: 1708973932025, category: app.js, level: INFO, message: {"red":"red","blue":"blue"}
+Date: 1708973932026, category: app.js, level: ERROR, message: {"red":"red","blue":"blue"}
+Date: 1708973932026, category: app.js, level: TRACE, message: {"red":"red","blue":"blue"}
+Date: 1708973932026, category: app.js, level: TRACE, message: {"red":"red","blue":"blue"}
+Date: 1708973932026, category: app.js, level: WARN, message: {"red":"red","blue":"blue"}
