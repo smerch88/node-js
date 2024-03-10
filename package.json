@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "start": "node index.js",
-    "logger": "node loggerExample/index.js"
+    "logger": "node loggerExample/index.js",
+    "server": "node loggerExample/server.js"
   },
   "repository": {
     "type": "git",
