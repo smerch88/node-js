@@ -1,11 +1,12 @@
 const storage = new Map();
 
-function add(code, payload){
-    storage.set(code, payload);
+function add(code, name, url, user) {
+    const currentTime = new Date();
+    storage.set(code, { name, url, createdAt: currentTime, user });
 }
 
-function get(code){
+function get(code) {
     return storage.get(code);
 }
 
-export default {add, get}
+export default { add, get };
