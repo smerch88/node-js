@@ -4,10 +4,6 @@ import generateHash from "../../utils/generateHash.js";
 
 const router = new express.Router();
 
-router.get("/", (req, res) => {
-    res.send("This is the URL controller");
-});
-
 router.post("/add", express.json(),
     (req, res) => {
         console.log(req.body);
@@ -23,13 +19,13 @@ router.post("/add", express.json(),
         const name = req.body.name;
         const url = req.body.url;
 
-        service.add(code, name, url, user);
+        service.addUrl(code, name, url, user);
 
         res.json({ code });
     });
 
 router.get("/info/:code", (req, res, next) => {
-    const data = service.get(req.params.code);
+    const data = service.getUrl(req.params.code);
     res.json(data);
     next();
 })

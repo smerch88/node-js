@@ -1,17 +1,19 @@
-const users = {
-    "arsenii": "admin"
-}
+import service from "./service.js";
 
 export default (req, res, next) => {
+    const users = service.getAllUsers();
     const auth = req.header("Authorization");
+
     if (auth?.startsWith("Basic ")) {
-        const authData = auth.substring(6, auth.length).split(":");
-        console.log(authData);
-        if (users[authData[0]] === authData[1]) {
+        const authData = auth.substring(6).split(":");
+        const username = authData[0];
+        const password = authData[1];
+
+        if (users.has(username) && users.get(username).password === password) {
             next();
             return;
         }
     }
 
-    res.status(401).end("Auth header not provided");
-}
+    res.status(401).end("Unauthorized");
+};
