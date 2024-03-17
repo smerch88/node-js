@@ -5,7 +5,6 @@ const router = new express.Router();
 
 router.post("/create", express.json(), (req, res, next) => {
     try {
-        console.log(req.body)
         const { name, password } = req.body;
         const created_time = Date.now();
 
