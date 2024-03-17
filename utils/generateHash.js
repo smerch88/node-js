@@ -16,4 +16,4 @@ function generateHash(quantity) {
     return hash;
 }
 
-module.exports = generateHash;
+export default generateHash;

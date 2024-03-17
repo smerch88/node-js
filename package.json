@@ -7,7 +7,9 @@
   "scripts": {
     "start": "node index.js",
     "logger": "node loggerExample/index.js",
-    "server": "node loggerExample/server.js"
+    "server": "node loggerExample/server.js",
+    "shorter": "node url-shorter/app.js",
+    "dev": "nodemon url-shorter/app.js"
   },
   "repository": {
     "type": "git",
@@ -20,10 +22,12 @@
   },
   "homepage": "https://github.com/smerch88/node-js#readme",
   "devDependencies": {
+    "nodemon": "^3.1.0",
     "prettier": "^3.2.5"
   },
   "dependencies": {
     "config": "^3.3.11",
-    "dotenv": "^16.4.5"
+    "dotenv": "^16.4.5",
+    "express": "^4.18.3"
   }
 }
