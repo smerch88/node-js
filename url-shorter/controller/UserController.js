@@ -3,6 +3,11 @@ import service from "../service.js";
 
 const router = new express.Router();
 
+router.get("/", express.json(), (req, res) => {
+    const users = service.getAllUsers();
+    res.render("users", { users });
+});
+
 router.post("/create", express.json(), (req, res, next) => {
     try {
         const { name, password } = req.body;
