@@ -1,8 +1,12 @@
 import express from "express"
-import authMiddleware from "./authMiddleware.js";
+import cookieParser from "cookie-parser";
+import authMiddleware from "./middleware/authMiddleware.js";
+import sessionMiddleware from "./middleware/sessionMiddleware.js";
+import LogInController from "./controller/LogInController.js";
 import UserController from "./controller/UserController.js";
 import UrlController from "./controller/UrlController.js";
 import CodeController from "./controller/CodeController.js";
+import session from "express-session";
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -12,24 +16,28 @@ const __dirname = dirname(__filename);
 
 const app = express();
 
+app.use(cookieParser());
+app.use(sessionMiddleware);
+
 app.set("views", path.join(__dirname, "view"));
 app.set("view engine", "ejs");
-app.use("/files", express.static("view"));
 
-app.use("/users", UserController);
-app.use("/info", (req, res, next) => {
-    req.session = {
-        status: "created"
+app.use(cookieParser());
+
+app.use(session({
+    secret: "QWESdfisdfj3",
+    saveUninitialized: true,
+    resave: true,
+    name: "sessionId",
+    cookie: {
+        httpOnly: true,
+        domain: "127.0.0.1",
     }
+}));
 
-    if (req.method === "GET") {
-        next();
-    }
-
-    throw new Error(404);
-
-})
+app.use("/login", LogInController);
 app.use(authMiddleware);
+app.use("/users", UserController);
 app.use("/url", UrlController);
 app.use("/code", CodeController);
 

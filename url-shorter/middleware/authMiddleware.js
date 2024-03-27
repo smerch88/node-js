@@ -1,7 +1,8 @@
-import service from "./service.js";
+import service from "../service.js";
 
 export default (req, res, next) => {
-    const users = service.getAllUsers();
+    const usersMap = service.getAllUsers();
+    const users = Array.from(usersMap.values());
     const auth = req.header("Authorization");
 
     if (auth?.startsWith("Basic ")) {

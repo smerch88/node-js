@@ -1,30 +1,105 @@
+<!-- users.ejs -->
+
 <!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-</head>
-<body>
-I'm users!!! Man
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User List</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+      <h1 class="text-3xl font-bold mb-4">User List</h1>
+      <div id="users" class="grid grid-cols-1 gap-4">
+            <% if (users && users.length > 0) { %>
+                <% users.forEach(user => { %>
+                    <div class="bg-white shadow p-4 rounded-lg">
+                        <p class="text-lg font-bold"><%= user.name %></p>
+                        <p class="text-sm text-gray-600">Created: <%= new Date(user.created_time).toLocaleString() %></p>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <p class="text-lg text-gray-600">No users found.</p>
+            <% } %>
+        </div>
+      <div class="mt-8">
+        <h2 class="text-xl font-bold mb-4">Create User</h2>
+        <form id="createUserForm">
+          <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="name"
+              >Name:</label
+            >
+            <input
+              type="text"
+              id="name"
+              name="name"
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            />
+          </div>
+          <div class="mb-4">
+            <label
+              class="block text-gray-700 text-sm font-bold mb-2"
+              for="password"
+              >Password:</label
+            >
+            <input
+              type="password"
+              id="password"
+              name="password"
+              class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            />
+          </div>
+          <div class="flex items-center justify-between">
+            <button
+              type="submit"
+              class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+              type="button"
+            >
+              Create
+            </button>
+            <p id="message" class="text-green-500 hidden"></p>
+          </div>
+        </form>
+      </div>
+    </div>
 
-<script>
-    (async () => {
-        const promise = fetch("/users/all");
+    <script>
+      document
+        .getElementById("createUserForm")
+        .addEventListener("submit", async (event) => {
+          event.preventDefault();
 
-        const response = await promise;
+          const formData = new FormData(event.target);
+          const name = formData.get("name");
+          const password = formData.get("password");
 
-        // console.log();
-        const users = await response.json();
-        console.log(users);
-        document.getElementById("users").textContent = JSON.stringify(users);
-    })()
-</script>
+          try {
+            const response = await fetch("/users/create", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ name, password }),
+            });
 
+            if (!response.ok) {
+              throw new Error("Failed to create user");
+            }
 
-<div id="users"></div>
-</body>
-</html>
+            const data = await response.json();
+            document.getElementById("message").textContent = data.message;
+            document.getElementById("message").classList.remove("hidden");
+          } catch (error) {
+            console.error(error);
+            document.getElementById("message").textContent =
+              "Failed to create user";
+            document.getElementById("message").classList.remove("hidden");
+          }
+        });
+    </script>
+  </body>
 </html>
