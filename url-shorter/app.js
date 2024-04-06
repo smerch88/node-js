@@ -1,4 +1,4 @@
-import express from "express"
+import express from "express";
 import cookieParser from "cookie-parser";
 import authMiddleware from "./middleware/authMiddleware.js";
 import sessionMiddleware from "./middleware/sessionMiddleware.js";
@@ -10,6 +10,10 @@ import session from "express-session";
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import redis from 'redis';
+import RedisStore from "connect-redis";
+
+const redisClient = redis.createClient();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -25,6 +29,9 @@ app.set("view engine", "ejs");
 app.use(cookieParser());
 
 app.use(session({
+    store: new RedisStore({
+        client: redisClient, ttl: 86400
+    }),
     secret: "QWESdfisdfj3",
     saveUninitialized: true,
     resave: true,
@@ -36,10 +43,10 @@ app.use(session({
 }));
 
 app.use("/login", LogInController);
-app.use(authMiddleware);
+app.use("/code", CodeController);
+// app.use(authMiddleware);
 app.use("/users", UserController);
 app.use("/url", UrlController);
-app.use("/code", CodeController);
 
 app.use((err, req, res, next) => {
     console.log(err);
