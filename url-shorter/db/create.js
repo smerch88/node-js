@@ -1,5 +1,4 @@
 import pg from 'pg';
-
 const { Pool } = pg;
 
 const pool = new Pool({
@@ -10,17 +9,48 @@ const pool = new Pool({
     port: 5420,
 });
 
-async function createTables() {
+async function createUsersTable() {
     const client = await pool.connect();
+
     try {
-        await client.query('CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, name VARCHAR(255) UNIQUE NOT NULL, password VARCHAR(255) NOT NULL, created_time TIMESTAMP NOT NULL)');
-        await client.query('CREATE TABLE IF NOT EXISTS urls (id SERIAL PRIMARY KEY, code VARCHAR(255) UNIQUE NOT NULL, name VARCHAR(255) NOT NULL, url TEXT NOT NULL, created_at TIMESTAMP NOT NULL, user_id VARCHAR(255) NOT NULL REFERENCES users(name), count INT DEFAULT 0)');
-        console.log('Tables created successfully');
-    } catch (err) {
-        console.error('Error creating tables', err);
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS users (
+                id SERIAL PRIMARY KEY,
+                name VARCHAR(50) NOT NULL,
+                surname VARCHAR(255) NOT NULL,
+                email VARCHAR(255) UNIQUE NOT NULL,
+                password VARCHAR(255) NOT NULL,
+                created_time VARCHAR(255) NOT NULL
+            )
+        `);
+        console.log("Users table created successfully");
+    } catch (error) {
+        console.error("Error creating users table:", error.message);
     } finally {
         client.release();
     }
 }
 
-createTables();
+async function createTestResultsTable() {
+    const client = await pool.connect();
+
+    try {
+        await client.query(`
+            CREATE TABLE IF NOT EXISTS test_results (
+                id SERIAL PRIMARY KEY,
+                user_email VARCHAR(255) REFERENCES users(email),
+                test_id VARCHAR(255) NOT NULL,
+                score INT NOT NULL,
+                created_time VARCHAR(255) NOT NULL
+            )
+        `);
+        console.log("Test results table created successfully");
+    } catch (error) {
+        console.error("Error creating test results table:", error.message);
+    } finally {
+        client.release();
+    }
+}
+
+createUsersTable();
+createTestResultsTable();
