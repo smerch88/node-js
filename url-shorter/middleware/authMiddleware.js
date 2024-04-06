@@ -1,8 +1,8 @@
 import service from "../service.js";
 
-export default (req, res, next) => {
-    const usersMap = service.getAllUsers();
-    const users = Array.from(usersMap.values());
+export default async (req, res, next) => {
+    const users = await service.getAllUsers();
+    console.log(users);
     const auth = req.header("Authorization");
 
     if (auth?.startsWith("Basic ")) {
@@ -10,7 +10,8 @@ export default (req, res, next) => {
         const username = authData[0];
         const password = authData[1];
 
-        if (users.has(username) && users.get(username).password === password) {
+        const user = users.find(user => user.name === username);
+        if (user && user.password === password) {
             next();
             return;
         }

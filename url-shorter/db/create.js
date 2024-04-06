@@ -1,56 +1,53 @@
-import pg from 'pg';
-const { Pool } = pg;
+import knex from 'knex';
 
-const pool = new Pool({
-    user: 'postgres',
-    host: 'localhost',
-    database: 'postgres',
-    password: 'postgres',
-    port: 5420,
+const knexInstance = knex({
+    client: 'pg',
+    connection: {
+        user: 'postgres',
+        host: 'localhost',
+        database: 'postgres',
+        password: 'postgres',
+        port: 5420
+    }
 });
 
-async function createUsersTable() {
-    const client = await pool.connect();
-
+async function createTables() {
     try {
-        await client.query(`
-            CREATE TABLE IF NOT EXISTS users (
-                id SERIAL PRIMARY KEY,
-                name VARCHAR(50) NOT NULL,
-                surname VARCHAR(255) NOT NULL,
-                email VARCHAR(255) UNIQUE NOT NULL,
-                password VARCHAR(255) NOT NULL,
-                created_time VARCHAR(255) NOT NULL
-            )
-        `);
-        console.log("Users table created successfully");
-    } catch (error) {
-        console.error("Error creating users table:", error.message);
+        const usersTableExists = await knexInstance.schema.hasTable('users');
+
+        if (!usersTableExists) {
+            await knexInstance.schema.createTable('users', function (table) {
+                table.increments('id').primary();
+                table.string('name').unique().notNullable();
+                table.string('password').notNullable();
+                table.timestamp('created_time').notNullable();
+            });
+            console.log('Users table created successfully');
+        } else {
+            console.log('Users table already exists');
+        }
+
+        const urlsTableExists = await knexInstance.schema.hasTable('urls');
+
+        if (!urlsTableExists) {
+            await knexInstance.schema.createTable('urls', function (table) {
+                table.increments('id').primary();
+                table.string('code').unique().notNullable();
+                table.string('name').notNullable();
+                table.text('url').notNullable();
+                table.timestamp('created_at').notNullable();
+                table.string('user_id').notNullable().references('name').inTable('users');
+                table.integer('count').defaultTo(0);
+            });
+            console.log('Urls table created successfully');
+        } else {
+            console.log('Urls table already exists');
+        }
+    } catch (err) {
+        console.error('Error creating tables', err);
     } finally {
-        client.release();
+        knexInstance.destroy();
     }
 }
 
-async function createTestResultsTable() {
-    const client = await pool.connect();
-
-    try {
-        await client.query(`
-            CREATE TABLE IF NOT EXISTS test_results (
-                id SERIAL PRIMARY KEY,
-                user_email VARCHAR(255) REFERENCES users(email),
-                test_id VARCHAR(255) NOT NULL,
-                score INT NOT NULL,
-                created_time VARCHAR(255) NOT NULL
-            )
-        `);
-        console.log("Test results table created successfully");
-    } catch (error) {
-        console.error("Error creating test results table:", error.message);
-    } finally {
-        client.release();
-    }
-}
-
-createUsersTable();
-createTestResultsTable();
+createTables();
