@@ -9,7 +9,8 @@
     "logger": "node loggerExample/index.js",
     "server": "node loggerExample/server.js",
     "shorter": "node url-shorter/app.js",
-    "dev": "nodemon url-shorter/app.js"
+    "dev": "nodemon url-shorter/app.js",
+    "createTables": "nodemon url-shorter/db/create.js"
   },
   "repository": {
     "type": "git",
@@ -31,6 +32,7 @@
     "dotenv": "^16.4.5",
     "ejs": "^3.1.9",
     "express": "^4.18.3",
-    "express-session": "^1.18.0"
+    "express-session": "^1.18.0",
+    "pg": "^8.11.5"
   }
 }
