@@ -1,48 +1,83 @@
-const urlStorage = new Map();
-const userStorage = new Map();
+import knex from 'knex';
 
-function addUrl(code, name, url, user, count = 0) {
-    const currentTime = new Date();
-    urlStorage.set(code, { name, url, createdAt: currentTime, user, count });
-}
-
-function getUserUrls(username) {
-    const userUrls = [];
-    for (const [code, data] of urlStorage.entries()) {
-        if (data.user === username) {
-            userUrls.push({ code, name: data.name, url: data.url });
-        }
+const knexInstance = knex({
+    client: 'pg',
+    connection: {
+        user: 'postgres',
+        host: 'localhost',
+        database: 'postgres',
+        password: 'postgres',
+        port: 5420
     }
-    return userUrls;
-}
+});
 
-function addUser(name, password, created_time) {
-    const newUser = { name, password, created_time };
-    userStorage.set(name, newUser);
-}
-
-function getUrl(code) {
-    return urlStorage.get(code);
-}
-
-function getAllUsers() {
-    return userStorage;
-}
-
-function incrementUrlCount(code) {
-    const data = urlStorage.get(code);
-    if (data) {
-        data.count++;
-        urlStorage.set(code, data);
+async function addUrl(code, name, url, user, count = 0) {
+    const currentTime = new Date().toISOString();
+    try {
+        await knexInstance('urls').insert({ code, name, url, created_at: currentTime, user_id: user, count });
+    } catch (err) {
+        console.error('Error adding URL', err);
+        throw err;
     }
 }
 
-function checkPassword(name, password) {
-    const user = userStorage.get(name);
-    if (user && user.password === password) {
-        return true;
+async function getUserUrls(username) {
+    try {
+        const urls = await knexInstance('urls').select('code', 'name', 'url').where({ user_id: username });
+        return urls;
+    } catch (err) {
+        console.error('Error fetching user URLs', err);
+        throw err;
     }
-    return false;
+}
+
+async function addUser(name, password, created_time) {
+    try {
+        const createdTime = new Date(created_time).toISOString();
+        await knexInstance('users').insert({ name, password, created_time: createdTime });
+    } catch (err) {
+        console.error('Error adding user', err);
+        throw err;
+    }
+}
+
+async function getUrl(code) {
+    try {
+        const url = await knexInstance('urls').select('*').where({ code }).first();
+        return url;
+    } catch (err) {
+        console.error('Error fetching URL', err);
+        throw err;
+    }
+}
+
+async function getAllUsers() {
+    try {
+        const users = await knexInstance('users').select('*');
+        return users;
+    } catch (err) {
+        console.error('Error fetching all users', err);
+        throw err;
+    }
+}
+
+async function incrementUrlCount(code) {
+    try {
+        await knexInstance('urls').where({ code }).increment('count', 1);
+    } catch (err) {
+        console.error('Error incrementing URL count', err);
+        throw err;
+    }
+}
+
+async function checkPassword(name, password) {
+    try {
+        const user = await knexInstance('users').select('*').where({ name, password }).first();
+        return !!user;
+    } catch (err) {
+        console.error('Error checking user password', err);
+        throw err;
+    }
 }
 
 export default { addUrl, getUrl, incrementUrlCount, addUser, getAllUsers, checkPassword, getUserUrls };

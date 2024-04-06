@@ -29,14 +29,14 @@ router.post("/add", express.json(), (req, res) => {
     res.json({ code });
 });
 
-router.get("/info/:code", (req, res) => {
-    const data = service.getUrl(req.params.code);
+router.get("/info/:code", async (req, res) => {
+    const data = await service.getUrl(req.params.code);
     res.json(data);
 });
 
-router.get("/:username/urls", (req, res) => {
+router.get("/:username/urls", async (req, res) => {
     const username = req.cookies.login;
-    const userUrls = service.getUserUrls(username);
+    const userUrls = await service.getUserUrls(username);
     console.log(userUrls)
     res.render("shorter", { urls: userUrls });
 });

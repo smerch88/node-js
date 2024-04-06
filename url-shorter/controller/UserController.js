@@ -3,10 +3,8 @@ import service from "../service.js";
 
 const router = new express.Router();
 
-router.get("/", express.json(), (req, res) => {
-    const usersMap = service.getAllUsers();
-    const users = Array.from(usersMap.values());
-    console.log(users)
+router.get("/", express.json(), async (req, res) => {
+    const users = await service.getAllUsers();
     res.render("users", { "users": users });
 });
 
@@ -25,11 +23,10 @@ router.post("/create", express.json(), (req, res, next) => {
     }
 });
 
-router.get("/all", (req, res, next) => {
+router.get("/all", async (req, res, next) => {
     try {
-        const users = service.getAllUsers();
-        const usersArray = Array.from(users.values());
-        res.json(usersArray);
+        const users = await service.getAllUsers();
+        res.json(users);
     } catch (error) {
         next(error);
     }
