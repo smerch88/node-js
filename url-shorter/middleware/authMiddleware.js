@@ -2,7 +2,6 @@ import service from "../service.js";
 
 export default async (req, res, next) => {
     const users = await service.getAllUsers();
-    console.log(users);
     const auth = req.header("Authorization");
 
     if (auth?.startsWith("Basic ")) {
