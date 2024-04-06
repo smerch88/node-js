@@ -1,42 +1,32 @@
-import pg from 'pg';
+import knex from 'knex';
 
-const { Pool } = pg;
-
-const pool = new Pool({
-    user: 'postgres',
-    host: 'localhost',
-    database: 'postgres',
-    password: 'postgres',
-    port: 5420,
+const knexInstance = knex({
+    client: 'pg',
+    connection: {
+        user: 'postgres',
+        host: 'localhost',
+        database: 'postgres',
+        password: 'postgres',
+        port: 5420
+    }
 });
 
 async function addUrl(code, name, url, user, count = 0) {
-    const currentTime = new Date();
+    const currentTime = new Date().toISOString();
     try {
-        const client = await pool.connect();
-        const result = await client.query(
-            'INSERT INTO urls (code, name, url, created_at, user_id, count) VALUES ($1, $2, $3, $4, $5, $6)',
-            [code, name, url, currentTime, user, count]
-        );
-        client.release();
-        return result.rows[0];
+        await knexInstance('urls').insert({ code, name, url, created_at: currentTime, user_id: user, count });
     } catch (err) {
-        console.error('Error executing SQL query', err);
+        console.error('Error adding URL', err);
         throw err;
     }
 }
 
 async function getUserUrls(username) {
     try {
-        const client = await pool.connect();
-        const result = await client.query(
-            'SELECT code, name, url FROM urls WHERE user_id = $1',
-            [username]
-        );
-        client.release();
-        return result.rows;
+        const urls = await knexInstance('urls').select('code', 'name', 'url').where({ user_id: username });
+        return urls;
     } catch (err) {
-        console.error('Error executing SQL query', err);
+        console.error('Error fetching user URLs', err);
         throw err;
     }
 }
@@ -44,74 +34,48 @@ async function getUserUrls(username) {
 async function addUser(name, password, created_time) {
     try {
         const createdTime = new Date(created_time).toISOString();
-
-        const client = await pool.connect();
-        const result = await client.query(
-            'INSERT INTO users (name, password, created_time) VALUES ($1, $2, $3)',
-            [name, password, createdTime]
-        );
-        client.release();
-        return result.rows[0];
+        await knexInstance('users').insert({ name, password, created_time: createdTime });
     } catch (err) {
-        console.error('Error executing SQL query', err);
+        console.error('Error adding user', err);
         throw err;
     }
 }
 
-
 async function getUrl(code) {
     try {
-        const client = await pool.connect();
-        const result = await client.query(
-            'SELECT * FROM urls WHERE code = $1',
-            [code]
-        );
-        client.release();
-        return result.rows[0];
+        const url = await knexInstance('urls').select('*').where({ code }).first();
+        return url;
     } catch (err) {
-        console.error('Error executing SQL query', err);
+        console.error('Error fetching URL', err);
         throw err;
     }
 }
 
 async function getAllUsers() {
     try {
-        const client = await pool.connect();
-        const result = await client.query('SELECT * FROM users');
-        client.release();
-        return result.rows;
+        const users = await knexInstance('users').select('*');
+        return users;
     } catch (err) {
-        console.error('Error executing SQL query', err);
+        console.error('Error fetching all users', err);
         throw err;
     }
 }
 
 async function incrementUrlCount(code) {
     try {
-        const client = await pool.connect();
-        const result = await client.query(
-            'UPDATE urls SET count = count + 1 WHERE code = $1',
-            [code]
-        );
-        client.release();
-        return result.rows[0];
+        await knexInstance('urls').where({ code }).increment('count', 1);
     } catch (err) {
-        console.error('Error executing SQL query', err);
+        console.error('Error incrementing URL count', err);
         throw err;
     }
 }
 
 async function checkPassword(name, password) {
     try {
-        const client = await pool.connect();
-        const result = await client.query(
-            'SELECT * FROM users WHERE name = $1 AND password = $2',
-            [name, password]
-        );
-        client.release();
-        return result.rows.length > 0;
+        const user = await knexInstance('users').select('*').where({ name, password }).first();
+        return !!user;
     } catch (err) {
-        console.error('Error executing SQL query', err);
+        console.error('Error checking user password', err);
         throw err;
     }
 }
