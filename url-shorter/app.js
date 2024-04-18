@@ -1,6 +1,5 @@
 import express from "express";
 import cookieParser from "cookie-parser";
-import authMiddleware from "./middleware/authMiddleware.js";
 import sessionMiddleware from "./middleware/sessionMiddleware.js";
 import LogInController from "./controller/LogInController.js";
 import UserController from "./controller/UserController.js";
@@ -12,6 +11,7 @@ import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import redis from 'redis';
 import RedisStore from "connect-redis";
+import { authorizedInSessionMiddleware } from "./middleware/authMiddleware.js";
 
 const redisClient = redis.createClient();
 
@@ -44,7 +44,7 @@ app.use(session({
 
 app.use("/login", LogInController);
 app.use("/code", CodeController);
-// app.use(authMiddleware);
+app.use(authorizedInSessionMiddleware);
 app.use("/users", UserController);
 app.use("/url", UrlController);
 

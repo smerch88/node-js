@@ -5,21 +5,27 @@ const SESSION_ID = "sessionId";
 const storage = {};
 
 function sessionMiddleware(req, res, next) {
+
     let sessionId = req.cookies[SESSION_ID];
     let session = storage[sessionId];
+    console.log('session', session);
+    console.log('storage', storage);
 
     if (!session) {
         if (!sessionId) {
             sessionId = generateHash(16);
-            res.cookie(SESSION_ID, sessionId, { httpOnly: true });
+            res.cookie("sessionId", sessionId, { domain: req.host });
         }
-        session = {};
+        session = {}
     }
 
     req.sessionId = sessionId;
     req.session = session;
 
     next();
+
+    storage[sessionId] = session;
+
 }
 
 export default sessionMiddleware;
