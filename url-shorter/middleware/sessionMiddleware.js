@@ -8,8 +8,6 @@ function sessionMiddleware(req, res, next) {
 
     let sessionId = req.cookies[SESSION_ID];
     let session = storage[sessionId];
-    console.log('session', session);
-    console.log('storage', storage);
 
     if (!session) {
         if (!sessionId) {

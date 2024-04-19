@@ -3,7 +3,6 @@ import service from "../service.js";
 async function basicAuthorizationMiddleware(req, res, next) {
     const users = await service.getAllUsers();
     const auth = req.header("Authorization");
-    console.log('auth', auth);
 
     if (auth?.startsWith("Basic ")) {
         const authData = auth.substring(6).split(":");
@@ -11,9 +10,6 @@ async function basicAuthorizationMiddleware(req, res, next) {
         const password = authData[1];
 
         const user = users.find(user => user.name === username);
-        console.log('username', username);
-        console.log('password', password);
-        console.log('user', user);
         if (user && user.password === password) {
             next();
             return;

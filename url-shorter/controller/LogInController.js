@@ -11,7 +11,6 @@ router.post("/", express.json(), (req, res) => {
     const { login, password } = req.body;
     if (service.checkPassword(login, password)) {
         req.session.login = login;
-        console.log('req.session', req.session);
         res.redirect(302, "/users");
     } else {
         res.render("login", { errorMessage: "Unauthorized" });

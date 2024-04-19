@@ -1,6 +1,7 @@
 import express from "express";
 import service from "../service.js";
 import generateHash from "../../utils/generateHash.js";
+import rateService from "../services/rateService.js";
 
 const router = express.Router();
 
@@ -25,6 +26,8 @@ router.post("/add", express.json(), (req, res) => {
     const url = req.body.url;
 
     service.addUrl(code, name, url, user);
+    rateService.setUrlRate(code, username);
+    rateService.setUrlRateName(code, username);
 
     res.json({ code });
 });

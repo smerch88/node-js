@@ -1,19 +1,18 @@
-import express from "express";
-import cookieParser from "cookie-parser";
-import sessionMiddleware from "./middleware/sessionMiddleware.js";
-import LogInController from "./controller/LogInController.js";
-import UserController from "./controller/UserController.js";
-import UrlController from "./controller/UrlController.js";
-import CodeController from "./controller/CodeController.js";
-import session from "express-session";
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-import redis from 'redis';
 import RedisStore from "connect-redis";
+import cookieParser from "cookie-parser";
+import express from "express";
+import session from "express-session";
+import path, { dirname } from 'path';
+import { fileURLToPath } from 'url';
+import config from "./config.js";
+import CodeController from "./controller/CodeController.js";
+import LogInController from "./controller/LogInController.js";
+import UrlController from "./controller/UrlController.js";
+import UserController from "./controller/UserController.js";
 import { authorizedInSessionMiddleware } from "./middleware/authMiddleware.js";
+import sessionMiddleware from "./middleware/sessionMiddleware.js";
 
-const redisClient = redis.createClient();
+import redisClient from "./db/redisClient.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -32,7 +31,7 @@ app.use(session({
     store: new RedisStore({
         client: redisClient, ttl: 86400
     }),
-    secret: "QWESdfisdfj3",
+    secret: config.secret,
     saveUninitialized: true,
     resave: true,
     name: "sessionId",
@@ -41,7 +40,6 @@ app.use(session({
         domain: "127.0.0.1",
     }
 }));
-
 app.use("/login", LogInController);
 app.use("/code", CodeController);
 app.use(authorizedInSessionMiddleware);
