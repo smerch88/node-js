@@ -1,6 +1,6 @@
 import service from "../service.js";
 
-export default async (req, res, next) => {
+async function basicAuthorizationMiddleware(req, res, next) {
     const users = await service.getAllUsers();
     const auth = req.header("Authorization");
 
@@ -15,6 +15,23 @@ export default async (req, res, next) => {
             return;
         }
     }
-
+    res.setHeader("WWW-Authenticate", "Basic");
     res.status(401).end("Unauthorized");
 };
+
+function authorizedInSessionMiddleware(req, res, next) {
+    if (req.session.email) {
+        return next();
+    }
+
+    if (req.method === "GET") {
+        res.redirect(302, "/login");
+    } else {
+        res.status(401).send("Unauthorized");
+    }
+}
+
+export {
+    authorizedInSessionMiddleware,
+    basicAuthorizationMiddleware
+}

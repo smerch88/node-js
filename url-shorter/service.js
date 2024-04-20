@@ -1,4 +1,5 @@
 import knex from 'knex';
+import rateService from './services/rateService.js';
 
 const knexInstance = knex({
     client: 'pg',
@@ -15,6 +16,7 @@ async function addUrl(code, name, url, user, count = 0) {
     const currentTime = new Date().toISOString();
     try {
         await knexInstance('urls').insert({ code, name, url, created_at: currentTime, user_id: user, count });
+        await rateService.setUrlRate(code);
     } catch (err) {
         console.error('Error adding URL', err);
         throw err;
