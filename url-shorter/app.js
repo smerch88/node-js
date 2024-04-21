@@ -2,11 +2,11 @@ import cookieParser from "cookie-parser";
 import express from "express";
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
-import CodeController from "./controller/CodeController.js";
-import UrlController from "./controller/UrlController.js";
-import UserController from "./controller/UserController.js";
-import authRouter from "./routes/authRouter.js";
 import { jwtMiddleware } from "./middleware/authMiddleware.js";
+import authRouter from "./routes/authRouter.js";
+import codeRouter from "./routes/codeRouter.js";
+import urlRouter from "./routes/urlRouter.js";
+import usersRouter from "./routes/usersRouter.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -20,11 +20,10 @@ app.set("views", path.join(__dirname, "view"));
 app.set("view engine", "ejs");
 
 app.use("/login", authRouter);
-app.use("/code", CodeController);
+app.use("/code", codeRouter);
 app.use(jwtMiddleware);
-// app.use(authorizedInSessionMiddleware);
-app.use("/users", UserController);
-app.use("/url", UrlController);
+app.use("/users", usersRouter);
+app.use("/url", urlRouter);
 
 app.use((err, req, res, next) => {
     console.log(err);

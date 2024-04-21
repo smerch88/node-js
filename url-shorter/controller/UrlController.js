@@ -1,47 +1,44 @@
-import express from "express";
 import service from "../service.js";
 import generateHash from "../../utils/generateHash.js";
 import rateService from "../services/rateService.js";
 
-const router = express.Router();
+async function addUrl(req, res) {
+    try {
+        const login = res.locals.decoded.login;
+        const code = generateHash(10);
+        const name = req.body.name;
+        const url = req.body.url;
 
-router.post("/add", express.json(), (req, res) => {
-    console.log(req.body);
-    let user;
-    const username = req.cookies.login;
-    const password = req.cookies.password;
+        await service.addUrl(code, name, url, login);
+        await rateService.setUrlRate(code, login);
+        await rateService.setUrlRateName(code, login);
 
-    if (username && password) {
-        user = username;
-    } else {
-        const auth = req.header("Authorization");
-        if (auth?.startsWith("Basic ")) {
-            const authData = auth.substring(6).split(":");
-            user = authData[0];
-        }
+        res.json({ code });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal Server Error" });
     }
+}
 
-    const code = generateHash(10);
-    const name = req.body.name;
-    const url = req.body.url;
+async function getUrlInfo(req, res) {
+    try {
+        const data = await service.getUrl(req.params.code);
+        res.json(data);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+}
 
-    service.addUrl(code, name, url, user);
-    rateService.setUrlRate(code, username);
-    rateService.setUrlRateName(code, username);
+async function getUserUrls(req, res) {
+    try {
+        const login = res.locals.decoded.login;
+        const userUrls = await service.getUserUrls(login);
+        res.render("shorter", { urls: userUrls });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+}
 
-    res.json({ code });
-});
-
-router.get("/info/:code", async (req, res) => {
-    const data = await service.getUrl(req.params.code);
-    res.json(data);
-});
-
-router.get("/:username/urls", async (req, res) => {
-    const username = req.cookies.login;
-    const userUrls = await service.getUserUrls(username);
-    console.log(userUrls)
-    res.render("shorter", { urls: userUrls });
-});
-
-export default router;
+export { addUrl, getUrlInfo, getUserUrls }
