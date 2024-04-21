@@ -5,6 +5,10 @@ function renderLoginPage(req, res) {
     res.render("login", { errorMessage: "" });
 }
 
+function renderRegisterPage(req, res) {
+    res.render("register", { errorMessage: "" });
+}
+
 function handleLogin(req, res) {
     const { login, password } = req.body;
     if (service.checkPassword(login, password)) {
@@ -25,23 +29,23 @@ function handleLogin(req, res) {
     }
 }
 
-function handleRegister(req, res, next) {
+async function handleRegister(req, res) {
     try {
         const { name, password } = req.body;
         const created_time = Date.now();
 
-        service.addUser(name, password, created_time);
+        await service.addUser(name, password, created_time);
 
-        const newUser = { name, password, created_time };
-
-        res.status(201).json({ message: "User created successfully", user: newUser });
+        res.redirect("/login");
     } catch (error) {
-        next(error);
+        console.error(error);
+        res.status(500).json({ error: "Internal Server Error" });
     }
 }
 
 export {
     renderLoginPage,
     handleLogin,
-    handleRegister
+    handleRegister,
+    renderRegisterPage
 }
