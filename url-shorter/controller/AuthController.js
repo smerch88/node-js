@@ -24,7 +24,7 @@ function handleLogin(req, res) {
             expires: new Date(Date.now() + 90000),
             httpOnly: true,
         });
-        res.redirect("/users");
+        res.redirect("/url/my-urls");
     } else {
         res.render("login", { errorMessage: "Unauthorized" });
     }

@@ -23,8 +23,8 @@ async function basicAuthorizationMiddleware(req, res, next) {
 async function jwtMiddleware(req, res, next) {
     const token = req.cookies['SESSION_TOKEN'];
     if (!token) {
-        const massage = { status: 401, data: 'Unauthorized' };
-        return res.status(401).json(massage);
+        res.redirect('/login');
+        return;
     }
     try {
         const decoded = jwt.verify(token, "secret");
@@ -35,12 +35,12 @@ async function jwtMiddleware(req, res, next) {
             res.locals.decoded = { login };
             return next();
         } else {
-            res.redirect('/auth/login');
+            res.redirect('/login');
             return;
         }
     } catch (err) {
         console.log(err);
-        res.redirect('/auth/login');
+        res.redirect('/login');
         return;
     }
 };

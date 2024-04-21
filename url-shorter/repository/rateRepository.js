@@ -8,4 +8,8 @@ const get = async (id, field) => {
   return db.hGet(id, field);
 };
 
-export { set, get };
+const deleteRecord = async (id) => {
+  return db.del(id);
+};
+
+export { set, get, deleteRecord };

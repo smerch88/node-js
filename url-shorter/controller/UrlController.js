@@ -20,6 +20,17 @@ async function addUrl(req, res) {
     }
 }
 
+async function deleteUrl(req, res) {
+    try {
+        const code = req.params.code;
+        await urlService.deleteUrl(code);
+        res.redirect("/url/my-urls");
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+}
+
 async function getUrlInfo(req, res) {
     try {
         const data = await urlService.getUrl(req.params.code);
@@ -41,4 +52,4 @@ async function getUserUrls(req, res) {
     }
 }
 
-export { addUrl, getUrlInfo, getUserUrls }
+export { addUrl, getUrlInfo, getUserUrls, deleteUrl }

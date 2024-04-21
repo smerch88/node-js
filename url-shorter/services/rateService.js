@@ -54,4 +54,8 @@ async function increaseUserRate(key) {
   await rateRepository.set(key, 'rate', userTimestampsWithinDuration.join(','));
 }
 
-export default { setUrlRate, checkURLRate, setUrlRateName };
+async function deleteRate(id) {
+  await rateRepository.deleteRecord(id);
+}
+
+export default { setUrlRate, checkURLRate, setUrlRateName, deleteRate };

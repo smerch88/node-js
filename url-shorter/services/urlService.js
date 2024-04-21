@@ -1,5 +1,5 @@
 import rateService from './rateService.js';
-import { addUrlToDB, getUrlFromDB, incrementUrlCountInDB, getUserUrlsFromDB } from '../repository/urlRepository.js';
+import { addUrlToDB, getUrlFromDB, incrementUrlCountInDB, getUserUrlsFromDB, deleteUrlFromDB } from '../repository/urlRepository.js';
 
 async function addUrl(code, name, url, user, count = 0) {
     try {
@@ -40,4 +40,14 @@ async function getUserUrls(username) {
     }
 }
 
-export default { addUrl, getUrl, incrementUrlCount, getUserUrls };
+async function deleteUrl(code) {
+    try {
+        await deleteUrlFromDB(code);
+        await rateService.deleteRate(code);
+    } catch (err) {
+        console.error('Error deleting URL', err);
+        throw err;
+    }
+}
+
+export default { addUrl, getUrl, incrementUrlCount, getUserUrls, deleteUrl };

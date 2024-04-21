@@ -39,4 +39,14 @@ async function getUserUrlsFromDB(username) {
     }
 }
 
-export { addUrlToDB, getUrlFromDB, incrementUrlCountInDB, getUserUrlsFromDB };
+async function deleteUrlFromDB(code) {
+    try {
+        console.log(code, "code");
+        await knexInstance('urls').where({ code }).del();
+    } catch (err) {
+        console.error('Error deleting URL', err);
+        throw err;
+    }
+}
+
+export { addUrlToDB, getUrlFromDB, incrementUrlCountInDB, getUserUrlsFromDB, deleteUrlFromDB };
