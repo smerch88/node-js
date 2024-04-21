@@ -1,6 +1,6 @@
-import service from "../service.js";
 import generateHash from "../../utils/generateHash.js";
 import rateService from "../services/rateService.js";
+import urlService from "../services/urlService.js";
 
 async function addUrl(req, res) {
     try {
@@ -9,7 +9,7 @@ async function addUrl(req, res) {
         const name = req.body.name;
         const url = req.body.url;
 
-        await service.addUrl(code, name, url, login);
+        await urlService.addUrl(code, name, url, login);
         await rateService.setUrlRate(code, login);
         await rateService.setUrlRateName(code, login);
 
@@ -22,7 +22,7 @@ async function addUrl(req, res) {
 
 async function getUrlInfo(req, res) {
     try {
-        const data = await service.getUrl(req.params.code);
+        const data = await urlService.getUrl(req.params.code);
         res.json(data);
     } catch (error) {
         console.error(error);
@@ -33,7 +33,7 @@ async function getUrlInfo(req, res) {
 async function getUserUrls(req, res) {
     try {
         const login = res.locals.decoded.login;
-        const userUrls = await service.getUserUrls(login);
+        const userUrls = await urlService.getUserUrls(login);
         res.render("shorter", { urls: userUrls });
     } catch (error) {
         console.error(error);

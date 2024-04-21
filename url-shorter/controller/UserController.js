@@ -1,8 +1,8 @@
-import service from "../service.js";
+import userService from "../services/userService.js";
 
 async function getAllUsersPage(req, res, next) {
     try {
-        const users = await service.getAllUsers();
+        const users = await userService.getAllUsers();
         res.render("users", { users });
     } catch (error) {
         next(error);
@@ -14,7 +14,7 @@ async function createUser(req, res, next) {
         const { name, password } = req.body;
         const created_time = Date.now();
 
-        service.addUser(name, password, created_time);
+        userService.addUser(name, password, created_time);
 
         const newUser = { name, password, created_time };
 
@@ -26,7 +26,7 @@ async function createUser(req, res, next) {
 
 async function getAllUsers(req, res, next) {
     try {
-        const users = await service.getAllUsers();
+        const users = await userService.getAllUsers();
         res.json(users);
     } catch (error) {
         next(error);

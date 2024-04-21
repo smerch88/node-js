@@ -1,8 +1,8 @@
-import service from "../service.js";
+import userService from "../services/userService.js";
 import jwt from "jsonwebtoken";
 
 async function basicAuthorizationMiddleware(req, res, next) {
-    const users = await service.getAllUsers();
+    const users = await userService.getAllUsers();
     const auth = req.header("Authorization");
 
     if (auth?.startsWith("Basic ")) {
@@ -29,7 +29,7 @@ async function jwtMiddleware(req, res, next) {
     try {
         const decoded = jwt.verify(token, "secret");
         const login = decoded?.login;
-        const users = await service.getAllUsers();
+        const users = await userService.getAllUsers();
         const user = users.filter(user => user.name === login);
         if (user) {
             res.locals.decoded = { login };

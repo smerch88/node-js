@@ -1,4 +1,5 @@
-import service from "../service.js";
+import authService from "../services/authService.js";
+import userService from "../services/userService.js";
 import jwt from "jsonwebtoken";
 
 function renderLoginPage(req, res) {
@@ -11,7 +12,7 @@ function renderRegisterPage(req, res) {
 
 function handleLogin(req, res) {
     const { login, password } = req.body;
-    if (service.checkPassword(login, password)) {
+    if (authService.checkPassword(login, password)) {
         const accessToken = jwt.sign(
             { login },
             "secret",
@@ -34,7 +35,7 @@ async function handleRegister(req, res) {
         const { name, password } = req.body;
         const created_time = Date.now();
 
-        await service.addUser(name, password, created_time);
+        await userService.addUser(name, password, created_time);
 
         res.redirect("/login");
     } catch (error) {
