@@ -1,22 +1,9 @@
-import bcrypt from 'bcrypt';
-import knex from 'knex';
-
-const knexInstance = knex({
-    client: 'pg',
-    connection: {
-        user: 'postgres',
-        host: 'localhost',
-        database: 'postgres',
-        password: 'postgres',
-        port: 5420
-    }
-});
+import * as authRepository from '../repository/authRepository.js';
 
 async function checkPassword(name, password) {
     try {
-        const user = await knexInstance('users').select('*').where({ name }).first();
-        if (!user) return false;
-        const match = await bcrypt.compare(password, user.password);
+        const user = await authRepository.getUserByNameFromDB(name);
+        const match = await authRepository.checkPasswordInDB(user, password);
         return match;
     } catch (err) {
         console.error('Error checking user password', err);
