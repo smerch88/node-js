@@ -1,3 +1,4 @@
+import bcrypt from 'bcrypt';
 import knex from 'knex';
 import rateService from './services/rateService.js';
 
@@ -11,6 +12,8 @@ const knexInstance = knex({
         port: 5420
     }
 });
+
+const saltRounds = 10;
 
 async function addUrl(code, name, url, user, count = 0) {
     const currentTime = new Date().toISOString();
@@ -36,7 +39,8 @@ async function getUserUrls(username) {
 async function addUser(name, password, created_time) {
     try {
         const createdTime = new Date(created_time).toISOString();
-        await knexInstance('users').insert({ name, password, created_time: createdTime });
+        const hashedPassword = await bcrypt.hash(password, saltRounds);
+        await knexInstance('users').insert({ name, password: hashedPassword, created_time: createdTime });
     } catch (err) {
         console.error('Error adding user', err);
         throw err;
@@ -74,8 +78,10 @@ async function incrementUrlCount(code) {
 
 async function checkPassword(name, password) {
     try {
-        const user = await knexInstance('users').select('*').where({ name, password }).first();
-        return !!user;
+        const user = await knexInstance('users').select('*').where({ name }).first();
+        if (!user) return false;
+        const match = await bcrypt.compare(password, user.password);
+        return match;
     } catch (err) {
         console.error('Error checking user password', err);
         throw err;
