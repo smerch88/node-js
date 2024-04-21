@@ -1,4 +1,5 @@
 import service from "../service.js";
+import jwt from "jsonwebtoken";
 
 async function basicAuthorizationMiddleware(req, res, next) {
     const users = await service.getAllUsers();
@@ -19,19 +20,33 @@ async function basicAuthorizationMiddleware(req, res, next) {
     res.status(401).end("Unauthorized");
 };
 
-function authorizedInSessionMiddleware(req, res, next) {
-    if (req.session.email) {
-        return next();
+async function jwtMiddleware(req, res, next) {
+    const token = req.cookies['SESSION_TOKEN'];
+    if (!token) {
+        const massage = { status: 401, data: 'Unauthorized' };
+        return res.status(401).json(massage);
     }
+    try {
+        const decoded = jwt.verify(token, "secret");
+        const login = decoded?.login;
+        const users = await service.getAllUsers();
+        const user = users.filter(user => user.name === login);
+        if (user) {
+            res.locals.decoded = { login };
+            return next();
+        } else {
+            res.redirect('/auth/login');
+            return;
+        }
+    } catch (err) {
+        console.log(err);
+        res.redirect('/auth/login');
+        return;
+    }
+};
 
-    if (req.method === "GET") {
-        res.redirect(302, "/login");
-    } else {
-        res.status(401).send("Unauthorized");
-    }
-}
 
 export {
-    authorizedInSessionMiddleware,
+    jwtMiddleware,
     basicAuthorizationMiddleware
 }
