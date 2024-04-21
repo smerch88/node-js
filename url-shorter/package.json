@@ -1,0 +1,43 @@
+{
+  "name": "js",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "logger": "node loggerExample/index.js",
+    "server": "node loggerExample/server.js",
+    "shorter": "node app.js",
+    "dev": "nodemon app.js",
+    "createTables": "nodemon db/create.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/smerch88/node-js.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/smerch88/node-js/issues"
+  },
+  "homepage": "https://github.com/smerch88/node-js#readme",
+  "devDependencies": {
+    "nodemon": "^3.1.0",
+    "prettier": "^3.2.5"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "config": "^3.3.11",
+    "connect-redis": "^7.1.1",
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.9",
+    "express": "^4.18.3",
+    "express-session": "^1.18.0",
+    "jsonwebtoken": "^9.0.2",
+    "knex": "^3.1.0",
+    "pg": "^8.11.5",
+    "redis": "^4.6.13"
+  }
+}

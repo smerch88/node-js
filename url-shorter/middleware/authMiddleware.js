@@ -45,8 +45,17 @@ async function jwtMiddleware(req, res, next) {
     }
 };
 
+async function isAdmin(req, res, next) {
+    const login = res.locals.decoded.login;
+    if (login === "arsenii") {
+        next();
+    } else {
+        res.status(403).send("Forbidden");
+    }
+};
 
 export {
+    isAdmin,
     jwtMiddleware,
     basicAuthorizationMiddleware
 }

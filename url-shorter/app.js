@@ -1,5 +1,6 @@
 import cookieParser from "cookie-parser";
 import express from "express";
+import bodyParser from 'body-parser';
 import path, { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import { jwtMiddleware } from "./middleware/authMiddleware.js";
@@ -14,7 +15,8 @@ const __dirname = dirname(__filename);
 const app = express();
 
 app.use(cookieParser());
-app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 app.set("views", path.join(__dirname, "view"));
 app.set("view engine", "ejs");

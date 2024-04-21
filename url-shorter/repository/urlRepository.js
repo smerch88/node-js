@@ -31,7 +31,7 @@ async function incrementUrlCountInDB(code) {
 
 async function getUserUrlsFromDB(username) {
     try {
-        const urls = await knexInstance('urls').select('code', 'name', 'url').where({ user_id: username });
+        const urls = await knexInstance('urls').select('code', 'name', 'url', 'created_at', 'count').where({ user_id: username });
         return urls;
     } catch (err) {
         console.error('Error fetching user URLs', err);
