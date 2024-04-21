@@ -1,13 +1,14 @@
 import * as rateRepository from '../repository/rateRepository.js';
 
 const RATE_LIMIT_DURATION_MS = 3600000;
-const RATE_LIMIT_MAX_REQUESTS = 100;
+const RATE_LIMIT_MAX_REQUESTS = 70;
 const USER_RATE_LIMIT_DURATION_MS = 86400000;
 const USER_RATE_LIMIT_MAX_REQUESTS = 1000;
 
 async function setUrlRate(id) {
   const currentTime = new Date().getTime();
   await rateRepository.set(id, 'rate', currentTime);
+  await rateRepository.set(id, 'count', 0);
 }
 
 async function setUrlRateName(id, username) {
@@ -15,43 +16,49 @@ async function setUrlRateName(id, username) {
 }
 
 async function checkURLRate(id, username) {
-  await increaseUrlRate(id);
+  const currentTime = new Date().getTime();
   const urlRate = await rateRepository.get(id, 'rate');
-  const urlTimestamps = urlRate.split(',').map(Number);
-  const currentMoment = new Date().getTime();
-  const urlRequestsWithinDuration = urlTimestamps.filter(timestamp => timestamp > currentMoment - RATE_LIMIT_DURATION_MS);
+  const urlTimestamp = parseInt(urlRate);
+
+  if (!urlTimestamp || currentTime - urlTimestamp > RATE_LIMIT_DURATION_MS) {
+    await setUrlRate(id);
+  }
 
   const userRateKey = `user_${username}`;
-  await increaseUserRate(userRateKey);
   const userRate = await rateRepository.get(userRateKey, 'rate');
-  const userTimestamps = userRate ? userRate.split(',').map(Number) : [];
-  const userRequestsWithinDuration = userTimestamps.filter(timestamp => timestamp > currentMoment - USER_RATE_LIMIT_DURATION_MS);
+  const userTimestamp = parseInt(userRate);
 
-  if (urlRequestsWithinDuration.length > RATE_LIMIT_MAX_REQUESTS || userRequestsWithinDuration.length > USER_RATE_LIMIT_MAX_REQUESTS) {
+  if (!userTimestamp || currentTime - userTimestamp > USER_RATE_LIMIT_DURATION_MS) {
+    await rateRepository.set(userRateKey, 'rate', currentTime);
+    await rateRepository.set(userRateKey, 'count', 0);
+  }
+
+  const urlCount = await rateRepository.get(id, 'count');
+  const userCount = await rateRepository.get(userRateKey, 'count');
+
+  if (parseInt(urlCount) > RATE_LIMIT_MAX_REQUESTS || parseInt(userCount) > USER_RATE_LIMIT_MAX_REQUESTS) {
     return false;
   }
 
+  await increaseUrlRate(id);
+  await increaseUserRate(userRateKey);
   return true;
 }
 
 async function increaseUrlRate(id) {
-  const currentTime = new Date().getTime();
-  const urlRate = await rateRepository.get(id, 'rate');
-  const urlTimestamps = urlRate ? urlRate.split(',').map(Number) : [];
-  urlTimestamps.push(currentTime);
-  const currentMoment = new Date().getTime();
-  const urlTimestampsWithinDuration = urlTimestamps.filter(timestamp => timestamp > currentMoment - RATE_LIMIT_DURATION_MS);
-  await rateRepository.set(id, 'rate', urlTimestampsWithinDuration.join(','));
+  const urlCount = await rateRepository.get(id, 'count');
+  const newCount = parseInt(urlCount) + 1;
+  await rateRepository.set(id, 'count', newCount);
 }
 
 async function increaseUserRate(key) {
-  const currentTime = new Date().getTime();
-  const userRate = await rateRepository.get(key, 'rate');
-  const userTimestamps = userRate ? userRate.split(',').map(Number) : [];
-  userTimestamps.push(currentTime);
-  const currentMoment = new Date().getTime();
-  const userTimestampsWithinDuration = userTimestamps.filter(timestamp => timestamp > currentMoment - USER_RATE_LIMIT_DURATION_MS);
-  await rateRepository.set(key, 'rate', userTimestampsWithinDuration.join(','));
+  const userCount = await rateRepository.get(key, 'count');
+  const newCount = parseInt(userCount) + 1;
+  await rateRepository.set(key, 'count', newCount);
 }
 
-export default { setUrlRate, checkURLRate, setUrlRateName };
+async function deleteRate(id) {
+  await rateRepository.deleteRecord(id);
+}
+
+export default { setUrlRate, checkURLRate, setUrlRateName, deleteRate };

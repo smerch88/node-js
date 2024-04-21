@@ -8,9 +8,9 @@
     "start": "node index.js",
     "logger": "node loggerExample/index.js",
     "server": "node loggerExample/server.js",
-    "shorter": "node url-shorter/app.js",
-    "dev": "nodemon url-shorter/app.js",
-    "createTables": "nodemon url-shorter/db/create.js"
+    "shorter": "node app.js",
+    "dev": "nodemon app.js",
+    "createTables": "nodemon db/create.js"
   },
   "repository": {
     "type": "git",

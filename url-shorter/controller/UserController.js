@@ -1,19 +1,20 @@
-import express from "express";
-import service from "../service.js";
+import userService from "../services/userService.js";
 
-const router = new express.Router();
+async function getAllUsersPage(req, res, next) {
+    try {
+        const users = await userService.getAllUsers();
+        res.render("users", { users });
+    } catch (error) {
+        next(error);
+    }
+}
 
-router.get("/", express.json(), async (req, res) => {
-    const users = await service.getAllUsers();
-    res.render("users", { "users": users });
-});
-
-router.post("/create", express.json(), (req, res, next) => {
+async function createUser(req, res, next) {
     try {
         const { name, password } = req.body;
         const created_time = Date.now();
 
-        service.addUser(name, password, created_time);
+        userService.addUser(name, password, created_time);
 
         const newUser = { name, password, created_time };
 
@@ -21,15 +22,15 @@ router.post("/create", express.json(), (req, res, next) => {
     } catch (error) {
         next(error);
     }
-});
+}
 
-router.get("/all", async (req, res, next) => {
+async function getAllUsers(req, res, next) {
     try {
-        const users = await service.getAllUsers();
+        const users = await userService.getAllUsers();
         res.json(users);
     } catch (error) {
         next(error);
     }
-});
+}
 
-export default router;
+export { getAllUsers, createUser, getAllUsersPage }

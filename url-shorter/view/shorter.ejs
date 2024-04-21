@@ -8,12 +8,31 @@
 </head>
 <body class="bg-gray-100 p-4">
     <h1 class="text-2xl font-bold mb-4">User URLs</h1>
-    <ul class="space-y-4">
-        <% urls.forEach(url => { %>
-            <li class="bg-white shadow-md p-4 rounded-lg">
-                <p class="font-semibold">Code: <%= url.code %></p>
-                <p class="text-gray-700">Name: <%= url.name %></p>
-                <a href="<%= url.url %>" class="text-blue-500 underline hover:text-blue-700"><%= url.url %></a>
+    <form action="/url/add" method="POST">
+        <div class="flex mb-4">
+            <label for="name" class="mr-2">Name:</label>
+            <input type="text" id="name" name="name" class="border p-2" required>
+        </div>
+        <div class="flex mb-4">
+            <label for="url" class="mr-2">URL:</label>
+            <input type="text" id="url" name="url" class="border p-2" required> 
+        </div>
+        <button type="submit" class="bg-green-500 text-white py-2 px-4 rounded-md hover:bg-green-600">Add URL</button>
+    </form>
+    <ul class="space-y-4 mt-4">
+        <% urls.reverse().forEach(url => { %>
+            <li class="bg-white shadow-md p-4 rounded-lg flex justify-between items-center">
+                <div>
+                    <p class="font-semibold">Code: <%= url.code %></p>
+                    <p class="text-gray-700">Name: <%= url.name %></p>
+                    <p class="text-gray-700">Created At: <%= new Date(url.created_at).toLocaleString() %></p>
+                    <p class="text-gray-700">Count: <%= url.count %></p>
+                    <a href="<%= url.url %>" class="text-blue-500 underline hover:text-blue-700"><%= url.url %></a>
+                </div>
+                <form action="/url/delete/<%= url.code %>" method="POST">
+                    <input type="hidden" name="code" value="<%= url.code %>">
+                    <button type="submit" class="bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600">Delete</button>
+                </form>
             </li>
         <% }); %>
     </ul>

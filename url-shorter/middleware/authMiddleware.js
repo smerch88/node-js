@@ -1,7 +1,8 @@
-import service from "../service.js";
+import userService from "../services/userService.js";
+import jwt from "jsonwebtoken";
 
 async function basicAuthorizationMiddleware(req, res, next) {
-    const users = await service.getAllUsers();
+    const users = await userService.getAllUsers();
     const auth = req.header("Authorization");
 
     if (auth?.startsWith("Basic ")) {
@@ -19,19 +20,42 @@ async function basicAuthorizationMiddleware(req, res, next) {
     res.status(401).end("Unauthorized");
 };
 
-function authorizedInSessionMiddleware(req, res, next) {
-    if (req.session.email) {
-        return next();
+async function jwtMiddleware(req, res, next) {
+    const token = req.cookies['SESSION_TOKEN'];
+    if (!token) {
+        res.redirect('/login');
+        return;
     }
+    try {
+        const decoded = jwt.verify(token, "secret");
+        const login = decoded?.login;
+        const users = await userService.getAllUsers();
+        const user = users.filter(user => user.name === login);
+        if (user) {
+            res.locals.decoded = { login };
+            return next();
+        } else {
+            res.redirect('/login');
+            return;
+        }
+    } catch (err) {
+        console.log(err);
+        res.redirect('/login');
+        return;
+    }
+};
 
-    if (req.method === "GET") {
-        res.redirect(302, "/login");
+async function isAdmin(req, res, next) {
+    const login = res.locals.decoded.login;
+    if (login === "arsenii@gmail.com") {
+        next();
     } else {
-        res.status(401).send("Unauthorized");
+        res.status(403).send("Forbidden");
     }
-}
+};
 
 export {
-    authorizedInSessionMiddleware,
+    isAdmin,
+    jwtMiddleware,
     basicAuthorizationMiddleware
 }
