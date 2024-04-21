@@ -47,7 +47,7 @@ async function jwtMiddleware(req, res, next) {
 
 async function isAdmin(req, res, next) {
     const login = res.locals.decoded.login;
-    if (login === "arsenii") {
+    if (login === "arsenii@gmail.com") {
         next();
     } else {
         res.status(403).send("Forbidden");
